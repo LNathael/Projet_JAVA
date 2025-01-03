@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import java.awt.BorderLayout; // Ajout de l'importation
 import model.Notification;
 import model.Participant;
 import service.NotificationService;
@@ -8,7 +9,6 @@ import service.NotificationService;
 public class NotificationsPanel extends JPanel {
     public NotificationsPanel() {
         setLayout(new BorderLayout());
-
 
         // Formulaire
         JPanel formPanel = new JPanel();
@@ -45,6 +45,5 @@ public class NotificationsPanel extends JPanel {
         });
 
         add(formPanel, BorderLayout.NORTH);
-
     }
 }
