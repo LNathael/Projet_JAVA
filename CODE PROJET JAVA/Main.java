@@ -1,6 +1,13 @@
 import java.sql.Connection;
 import java.time.LocalDateTime;
 
+import dao.ActiviteDAO;
+import dao.CalendrierDAO;
+import model.Notification;
+import model.Participant;
+import service.NotificationService;
+import util.DatabaseConnection;
+
 public class Main {
     public static void main(String[] args) {
         try {
