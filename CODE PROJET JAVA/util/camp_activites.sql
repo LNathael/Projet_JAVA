@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `participant_id` int NOT NULL,
   `message` text NOT NULL,
   `etat_envoye` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`) USING BTREE,
   KEY `participant_id` (`participant_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participants` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
