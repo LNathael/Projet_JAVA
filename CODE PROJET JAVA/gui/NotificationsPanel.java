@@ -9,6 +9,7 @@ public class NotificationsPanel extends JPanel {
     public NotificationsPanel() {
         setLayout(new BorderLayout());
 
+
         // Formulaire
         JPanel formPanel = new JPanel();
         formPanel.add(new JLabel("Nom Participant :"));
@@ -44,5 +45,6 @@ public class NotificationsPanel extends JPanel {
         });
 
         add(formPanel, BorderLayout.NORTH);
+
     }
 }
