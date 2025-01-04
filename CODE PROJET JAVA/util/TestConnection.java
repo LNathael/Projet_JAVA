@@ -1,5 +1,7 @@
 import java.sql.Connection;
 
+import util.DatabaseConnection;
+
 public class TestConnection {
     public static void main(String[] args) {
         try {

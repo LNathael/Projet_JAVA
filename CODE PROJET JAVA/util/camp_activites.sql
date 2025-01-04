@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `participants` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Listage des données de la table camp_activites.participants : ~0 rows (environ)
+-- Listage des données de la table camp_activites.participants : ~4 rows (environ)
 INSERT INTO `participants` (`id`, `nom`, `age`) VALUES
 	(1, 'Jean Dupont', 12),
 	(2, 'Marie Curie', 10),

@@ -1,4 +1,5 @@
 package model;
+
 public class Participant {
     private int id;
     private String nom;
@@ -10,6 +11,7 @@ public class Participant {
         this.age = age;
     }
 
+    public int getId() { return id; }
     public String getNom() { return nom; }
     public int getAge() { return age; }
 }

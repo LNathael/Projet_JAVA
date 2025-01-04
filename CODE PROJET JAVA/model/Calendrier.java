@@ -1,4 +1,5 @@
 package model;
+
 import java.time.LocalDateTime;
 
 public class Calendrier {
@@ -17,6 +18,7 @@ public class Calendrier {
         this.lieu = lieu;
     }
 
+    public int getId() { return id; }
     public Activite getActivite() { return activite; }
     public LocalDateTime getDebut() { return debut; }
     public LocalDateTime getFin() { return fin; }
