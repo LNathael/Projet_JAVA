@@ -1,4 +1,4 @@
-package gui;
+package gui.panels;
 
 import javax.swing.*;
 import java.awt.BorderLayout; // Ajout de l'importation
@@ -33,7 +33,7 @@ public class NotificationsPanel extends JPanel {
                     throw new IllegalArgumentException("Nom et message requis");
                 }
 
-                Participant participant = new Participant(1, name, 12); // Exemple participant
+                Participant participant = new Participant(1, name, 12, null); // Exemple participant
                 Notification notification = new Notification(1, participant, message);
 
                 NotificationService notificationService = new NotificationService();
