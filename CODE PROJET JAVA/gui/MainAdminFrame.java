@@ -1,5 +1,7 @@
 package gui;
 
+import gui.panels.UserManagementPanel;
+
 import javax.swing.*;
 import java.sql.Connection;
 
@@ -8,11 +10,15 @@ public class MainAdminFrame extends JFrame {
         setTitle("Administration - Gestion des utilisateurs");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
+        // Onglet de gestion des utilisateurs
         tabbedPane.addTab("Gérer les utilisateurs", new UserManagementPanel(connection));
-        tabbedPane.addTab("Autres outils d'administration", new JPanel()); // Placeholders
+
+        // Placeholder pour d'autres outils administratifs
+        tabbedPane.addTab("Autres outils d'administration", new JPanel());
 
         add(tabbedPane);
     }

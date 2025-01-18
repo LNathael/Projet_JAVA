@@ -6,6 +6,7 @@ public class Participant {
     private int age;
     private int userId; // Ajout de l'identifiant utilisateur
 
+    // Constructeur principal
     public Participant(int id, String nom, int age, int userId) {
         this.id = id;
         this.nom = nom;
@@ -13,6 +14,7 @@ public class Participant {
         this.userId = userId;
     }
 
+    // Getter et Setter
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
 

@@ -1,7 +1,10 @@
-package gui;
+package gui.panels;
 
 import dao.ParticipantDAO;
 import dao.UserDAO;
+import gui.MainAdminFrame;
+import gui.MainFrame;
+import gui.RegisterFrame;
 import model.Participant;
 
 import javax.swing.*;
@@ -45,25 +48,30 @@ public class LoginPanel extends JPanel {
                 // Charger le participant correspondant
                 ParticipantDAO participantDAO = new ParticipantDAO(connection);
                 Participant participant = participantDAO.getParticipantByUserId(getUserIdByUsername(username));
-                System.out.println("Participant chargé : " + participant);
-
-                new MainFrame(connection).setVisible(true);
-            }
-            SwingUtilities.getWindowAncestor(this).dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Identifiants incorrects.", "Erreur", JOptionPane.ERROR_MESSAGE);
-        }
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Erreur lors de la connexion.", "Erreur", JOptionPane.ERROR_MESSAGE);
-    }
-});
-
-
-        // Action du bouton Inscription
-        registerButton.addActionListener(e -> {
-            SwingUtilities.getWindowAncestor(this).dispose();
-            new RegisterFrame(connection).setVisible(true);
-        });
-    }
+                                System.out.println("Participant chargé : " + participant);
+                
+                                new MainFrame(connection).setVisible(true);
+                            }
+                            SwingUtilities.getWindowAncestor(this).dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Identifiants incorrects.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Erreur lors de la connexion.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                
+                
+                        // Action du bouton Inscription
+                        registerButton.addActionListener(e -> {
+                            SwingUtilities.getWindowAncestor(this).dispose();
+                            new RegisterFrame(connection).setVisible(true);
+                        });
+                    }
+                
+                    private int getUserIdByUsername(String username) {
+                        // TODO Auto-generated method stub
+                        throw new UnsupportedOperationException("Unimplemented method 'getUserIdByUsername'");
+                    }
 }

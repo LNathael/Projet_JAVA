@@ -38,9 +38,9 @@ public class LoginFrame extends JFrame {
         mainPanel.add(usernameField);
         mainPanel.add(passwordLabel);
         mainPanel.add(passwordField);
-        mainPanel.add(new JLabel());
+        mainPanel.add(new JLabel()); // Espace vide
         mainPanel.add(loginButton);
-        mainPanel.add(new JLabel());
+        mainPanel.add(new JLabel()); // Espace vide
         mainPanel.add(registerButton);
 
         add(mainPanel);
@@ -63,7 +63,7 @@ public class LoginFrame extends JFrame {
                 String role = userDAO.authenticateUser(username, password);
 
                 if (role != null) {
-                    if (role.equals("ADMIN")) {
+                    if ("ADMIN".equalsIgnoreCase(role)) {
                         new MainAdminFrame(connection).setVisible(true);
                     } else {
                         ParticipantDAO participantDAO = new ParticipantDAO(connection);

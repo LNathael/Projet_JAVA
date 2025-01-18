@@ -1,6 +1,11 @@
 package gui;
 
 import javax.swing.*;
+
+import gui.panels.ActivitesPanel;
+import gui.panels.CalendrierPanel;
+import gui.panels.NotificationsPanel;
+
 import java.sql.Connection;
 
 public class MainFrame extends JFrame {

@@ -1,7 +1,7 @@
 package gui.panels;
 
 import javax.swing.*;
-import java.awt.BorderLayout; // Ajout de l'importation
+import java.awt.BorderLayout;
 import model.Notification;
 import model.Participant;
 import service.NotificationService;
@@ -33,7 +33,8 @@ public class NotificationsPanel extends JPanel {
                     throw new IllegalArgumentException("Nom et message requis");
                 }
 
-                Participant participant = new Participant(1, name, 12, null); // Exemple participant
+                //TODO: Vous devez récupérer un vrai participant depuis la base de données
+                Participant participant = new Participant(1, name, 12, 1); // Exemple : ID et UserId fictifs
                 Notification notification = new Notification(1, participant, message);
 
                 NotificationService notificationService = new NotificationService();
