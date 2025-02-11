@@ -5,6 +5,8 @@ import javax.swing.*;
 import gui.panels.ActivitesPanel;
 import gui.panels.CalendrierPanel;
 import gui.panels.NotificationsPanel;
+import util.DatabaseConnection;
+
 
 import java.awt.*;
 
