@@ -8,7 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
     private JTextField usernameField;
@@ -58,21 +60,32 @@ public class LoginFrame extends JFrame {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    LoginFrame.this,
+                    "Veuillez remplir tous les champs.",
+                    "Erreur de connexion",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
             try {
                 UserDAO userDAO = new UserDAO(connection);
                 String role = userDAO.authenticateUser(username, password);
 
                 if (role != null) {
                     if ("ADMIN".equalsIgnoreCase(role)) {
-                        new MainAdminFrame(connection).setVisible(true);
+                        new MainAdminFrame(connection, username).setVisible(true);
                     } else {
+                        int userId = userDAO.getUserIdByUsername(username);
                         ParticipantDAO participantDAO = new ParticipantDAO(connection);
-                        Participant participant = participantDAO.getParticipantByUserId(userDAO.getUserIdByUsername(username));
+                        Participant participant = participantDAO.getParticipantByUserId(userId);
 
                         if (participant != null) {
                             System.out.println("Utilisateur connecté : " + participant.getNom());
                         }
-                        new MainFrame(connection).setVisible(true);
+                        new MainFrame(connection, username).setVisible(true);
                     }
                     dispose();
                 } else {
@@ -83,7 +96,7 @@ public class LoginFrame extends JFrame {
                         JOptionPane.ERROR_MESSAGE
                     );
                 }
-            } catch (Exception ex) {
+            } catch (SQLException | NoSuchAlgorithmException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(
                     LoginFrame.this,

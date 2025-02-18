@@ -6,7 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class RegisterFrame extends JFrame {
     private JTextField usernameField;
@@ -49,8 +51,28 @@ public class RegisterFrame extends JFrame {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    RegisterFrame.this,
+                    "Veuillez remplir tous les champs.",
+                    "Erreur d'inscription",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
             try {
                 UserDAO userDAO = new UserDAO(connection);
+                if (userDAO.isUsernameTaken(username)) {
+                    JOptionPane.showMessageDialog(
+                        RegisterFrame.this,
+                        "Nom d'utilisateur déjà pris.",
+                        "Erreur d'inscription",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+
                 boolean success = userDAO.registerUser(username, password, "USER");
 
                 if (success) {
@@ -65,12 +87,12 @@ public class RegisterFrame extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(
                         RegisterFrame.this,
-                        "Le nom d'utilisateur existe déjà.",
+                        "Une erreur s'est produite lors de l'inscription.",
                         "Erreur",
                         JOptionPane.ERROR_MESSAGE
                     );
                 }
-            } catch (Exception ex) {
+            } catch (SQLException | NoSuchAlgorithmException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(
                     RegisterFrame.this,
