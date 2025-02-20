@@ -19,15 +19,16 @@
 CREATE DATABASE IF NOT EXISTS `camp_activites` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `camp_activites`;
 
--- Listage de la structure de table camp_activites. activites
-CREATE TABLE IF NOT EXISTS `activites` (
+-- Listage de la structure de table camp_activites. activities
+CREATE TABLE IF NOT EXISTS `activities` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) NOT NULL,
   `age_min` int NOT NULL,
   `age_max` int NOT NULL,
   `description` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_nom` (`nom`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.
 
@@ -64,8 +65,23 @@ CREATE TABLE IF NOT EXISTS `participants` (
   `nom` varchar(255) NOT NULL,
   `age` int NOT NULL,
   `user_id` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Les données exportées n'étaient pas sélectionnées.
+
+-- Listage de la structure de table camp_activites. registrations
+CREATE TABLE IF NOT EXISTS `registrations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `activity_name` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'PENDING',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_activity` (`user_id`,`activity_name`),
+  CONSTRAINT `registrations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `participants` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.
 
@@ -77,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `role` varchar(50) NOT NULL,
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.
 
