@@ -3,6 +3,8 @@ package dao;
 import model.Participant;
 import model.Activity;
 import model.Registration;
+import model.Notification;
+import service.NotificationService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,6 +31,7 @@ public class ParticipantDAO {
                         rs.getString("nom"),
                         rs.getInt("age"),
                         rs.getInt("user_id"),
+                        rs.getInt("id_user"),
                         rs.getString("status")
                     );
                 }
@@ -48,6 +51,7 @@ public class ParticipantDAO {
                         rs.getString("nom"),
                         rs.getInt("age"),
                         rs.getInt("user_id"),
+                        rs.getInt("id_user"),
                         rs.getString("status")
                     );
                 }
@@ -67,6 +71,7 @@ public class ParticipantDAO {
                     rs.getString("nom"),
                     rs.getInt("age"),
                     rs.getInt("user_id"),
+                    rs.getInt("id_user"),
                     rs.getString("status")
                 );
                 participants.add(participant);
@@ -174,5 +179,35 @@ public class ParticipantDAO {
             }
         }
         return activities;
+    }
+
+    public void ajouterParticipant(Participant participant) throws SQLException {
+        String query = "INSERT INTO participants (nom, age, user_id, id_user, status) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, participant.getNom());
+            stmt.setInt(2, participant.getAge());
+            stmt.setInt(3, participant.getUserId());
+            stmt.setInt(4, participant.getIdUser());
+            stmt.setString(5, participant.getStatus());
+            stmt.executeUpdate();
+
+            Notification notification = new Notification(1, participant, "Un nouvel enfant a été ajouté.");
+            NotificationService notificationService = new NotificationService();
+            notificationService.notifierResponsable(notification, "Un nouvel enfant a été ajouté.");
+        }
+    }
+
+    public void notifierActiviteComplete(int activiteId) throws SQLException {
+        String query = "SELECT COUNT(*) AS count FROM registrations WHERE activity_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, activiteId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt("count") >= 10) { // Supposons que 10 est le nombre maximum de participants
+                    Notification notification = new Notification(1, null, "L'activité est complète.");
+                    NotificationService notificationService = new NotificationService();
+                    notificationService.notifierResponsable(notification, "L'activité est complète.");
+                }
+            }
+        }
     }
 }

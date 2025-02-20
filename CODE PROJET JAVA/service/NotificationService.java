@@ -1,23 +1,22 @@
 package service;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import model.Notification;
 
-public class NotificationService {
-    private Timer timer = new Timer();
+import java.util.Timer;
+import java.util.TimerTask;
 
-    public void planifierNotification(Notification notification, long delayMillis) {
+public class NotificationService {
+    public void planifierNotification(Notification notification, long delay) {
+        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 notification.envoyer();
             }
-        }, delayMillis);
+        }, delay);
     }
 
-    public void notifierResponsables(String message) {
-        // Logique pour notifier les responsables
-        System.out.println("Notification aux responsables: " + message);
+    public void notifierResponsable(Notification notification, String message) {
+        notification.notifierResponsable(message);
     }
 }

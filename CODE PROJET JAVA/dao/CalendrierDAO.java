@@ -16,7 +16,7 @@ public class CalendrierDAO {
     }
 
     public List<Calendrier> getParDate(LocalDateTime date) throws SQLException {
-        String query = "SELECT c.id AS calendrier_id, c.debut, c.fin, c.lieu, a.id AS activity_id, a.nom, a.age_min, a.age_max, a.description FROM calendrier c JOIN activities a ON c.activity_id = a.id WHERE DATE(c.debut) = ?";
+        String query = "SELECT c.id AS calendrier_id, c.debut, c.fin, c.lieu, a.id AS activity_id, a.nom, a.age_min, a.age_max, a.description FROM calendrier c JOIN activities a ON c.activite_id = a.id WHERE DATE(c.debut) = ?";
         PreparedStatement stmt = connection.prepareStatement(query);
         stmt.setDate(1, Date.valueOf(date.toLocalDate()));
 

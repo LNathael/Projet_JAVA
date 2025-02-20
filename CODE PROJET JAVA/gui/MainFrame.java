@@ -46,6 +46,8 @@ public class MainFrame extends JFrame {
             // Ajouter les onglets pour le client
             tabbedPane.addTab("Rechercher Activités", new ActivitySearchPanel(connection));
             tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
+            tabbedPane.addTab("Notifications", new NotificationsPanel(connection));
+
         }
 
         // Ajout des onglets au contenu principal de la fenêtre

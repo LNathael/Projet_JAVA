@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `activities` (
   `description` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_nom` (`nom`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `calendrier` (
   `lieu` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `activite_id` (`activite_id`),
-  CONSTRAINT `calendrier_ibfk_1` FOREIGN KEY (`activite_id`) REFERENCES `activites` (`id`) ON DELETE CASCADE
+  CONSTRAINT `calendrier_ibfk_1` FOREIGN KEY (`activite_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.
@@ -79,8 +79,7 @@ CREATE TABLE IF NOT EXISTS `registrations` (
   `activity_name` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'PENDING',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_user_activity` (`user_id`,`activity_name`),
-  CONSTRAINT `registrations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `participants` (`user_id`) ON DELETE CASCADE
+  UNIQUE KEY `unique_user_activity` (`user_id`,`activity_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Les données exportées n'étaient pas sélectionnées.

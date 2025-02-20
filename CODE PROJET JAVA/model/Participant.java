@@ -5,54 +5,34 @@ public class Participant {
     private String nom;
     private int age;
     private int userId;
+    private int idUser;
     private String status;
 
-    public Participant(int id, String nom, int age, int userId, String status) {
+    public Participant(int id, String nom, int age, int userId, int idUser, String status) {
         this.id = id;
         this.nom = nom;
         this.age = age;
         this.userId = userId;
+        this.idUser = idUser;
         this.status = status;
     }
 
-    // Getters et setters
-    public int getId() {
-        return id;
-    }
+    // Getters and setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
-    public String getNom() {
-        return nom;
-    }
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public int getAge() {
-        return age;
-    }
+    public int getIdUser() { return idUser; }
+    public void setIdUser(int idUser) { this.idUser = idUser; }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

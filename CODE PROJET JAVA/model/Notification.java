@@ -22,4 +22,8 @@ public class Notification {
         System.out.println("Notification envoyée à " + participant.getNom() + ": " + message);
         this.etatEnvoye = true;
     }
+
+    public void notifierResponsable(String message) {
+        System.out.println("Notification envoyée au responsable: " + message);
+    }
 }
