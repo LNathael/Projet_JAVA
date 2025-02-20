@@ -5,12 +5,14 @@ public class Participant {
     private String nom;
     private int age;
     private int userId;
+    private String status;
 
-    public Participant(int id, String nom, int age, int userId) {
+    public Participant(int id, String nom, int age, int userId, String status) {
         this.id = id;
         this.nom = nom;
         this.age = age;
         this.userId = userId;
+        this.status = status;
     }
 
     // Getters et setters
@@ -44,5 +46,13 @@ public class Participant {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

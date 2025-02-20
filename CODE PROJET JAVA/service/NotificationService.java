@@ -15,4 +15,9 @@ public class NotificationService {
             }
         }, delayMillis);
     }
+
+    public void notifierResponsables(String message) {
+        // Logique pour notifier les responsables
+        System.out.println("Notification aux responsables: " + message);
+    }
 }

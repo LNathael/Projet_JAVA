@@ -2,12 +2,17 @@ package gui.panels;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.sql.Connection;
+import dao.ParticipantDAO;
 import model.Notification;
 import model.Participant;
 import service.NotificationService;
 
 public class NotificationsPanel extends JPanel {
-    public NotificationsPanel() {
+    private Connection connection;
+
+    public NotificationsPanel(Connection connection) {
+        this.connection = connection;
         setLayout(new BorderLayout());
 
         // Formulaire
@@ -33,8 +38,13 @@ public class NotificationsPanel extends JPanel {
                     throw new IllegalArgumentException("Nom et message requis");
                 }
 
-                //TODO: Vous devez récupérer un vrai participant depuis la base de données
-                Participant participant = new Participant(1, name, 12, 1); // Exemple : ID et UserId fictifs
+                ParticipantDAO participantDAO = new ParticipantDAO(connection);
+                Participant participant = participantDAO.getParticipantByName(name);
+
+                if (participant == null) {
+                    throw new IllegalArgumentException("Participant non trouvé");
+                }
+
                 Notification notification = new Notification(1, participant, message);
 
                 NotificationService notificationService = new NotificationService();

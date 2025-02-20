@@ -1,5 +1,7 @@
 package gui;
 
+import gui.panels.ActivityManagementPanel;
+import gui.panels.ParticipantManagementPanel;
 import gui.panels.UserManagementPanel;
 
 import javax.swing.*;
@@ -26,8 +28,11 @@ public class MainAdminFrame extends JFrame {
         // Onglet de gestion des utilisateurs
         tabbedPane.addTab("Gérer les utilisateurs", new UserManagementPanel(connection));
 
-        // Placeholder pour d'autres outils administratifs
-        tabbedPane.addTab("Autres outils d'administration", new JPanel());
+        // Onglet de gestion des activités
+        tabbedPane.addTab("Gérer les activités", new ActivityManagementPanel(connection));
+
+        // Onglet de gestion des participants
+        tabbedPane.addTab("Gérer les participants", new ParticipantManagementPanel(connection));
 
         add(tabbedPane, BorderLayout.CENTER);
 

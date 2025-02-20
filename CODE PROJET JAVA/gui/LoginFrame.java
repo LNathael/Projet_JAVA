@@ -85,7 +85,7 @@ public class LoginFrame extends JFrame {
                         if (participant != null) {
                             System.out.println("Utilisateur connecté : " + participant.getNom());
                         }
-                        new MainFrame(connection, username).setVisible(true);
+                        new MainFrame(connection, username, role).setVisible(true);
                     }
                     dispose();
                 } else {

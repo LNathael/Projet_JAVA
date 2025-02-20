@@ -2,9 +2,11 @@ package gui;
 
 import javax.swing.*;
 
-import gui.panels.ActivitesPanel;
+import gui.panels.ActivityManagementPanel;
 import gui.panels.CalendrierPanel;
 import gui.panels.NotificationsPanel;
+import gui.panels.ActivitySearchPanel;
+import gui.panels.RegistrationManagementPanel;
 import util.DatabaseConnection;
 
 import java.awt.*;
@@ -14,11 +16,13 @@ import java.sql.Connection;
 
 public class MainFrame extends JFrame {
     private String username;
+    private String role;
     private Connection connection;
 
-    public MainFrame(Connection connection, String username) {
+    public MainFrame(Connection connection, String username, String role) {
         this.connection = connection;
         this.username = username;
+        this.role = role;
 
         // Titre de la fenêtre
         setTitle("Gestion des Activités et Notifications");
@@ -32,10 +36,17 @@ public class MainFrame extends JFrame {
         // Création des onglets principaux
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Ajouter les onglets à la fenêtre
-        tabbedPane.addTab("Activités", new ActivitesPanel(connection));
-        tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
-        tabbedPane.addTab("Notifications", new NotificationsPanel());
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            // Ajouter les onglets pour l'administrateur
+            tabbedPane.addTab("Activités", new ActivityManagementPanel(connection));
+            tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
+            tabbedPane.addTab("Notifications", new NotificationsPanel(connection));
+            tabbedPane.addTab("Inscriptions", new RegistrationManagementPanel(connection));
+        } else {
+            // Ajouter les onglets pour le client
+            tabbedPane.addTab("Rechercher Activités", new ActivitySearchPanel(connection));
+            tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
+        }
 
         // Ajout des onglets au contenu principal de la fenêtre
         add(tabbedPane, BorderLayout.CENTER);
@@ -61,7 +72,7 @@ public class MainFrame extends JFrame {
     public static void main(String[] args) {
         try {
             // Établir la connexion à la base de données
-            Connection connection = util.DatabaseConnection.getConnection();
+            Connection connection = DatabaseConnection.getConnection();
 
             // Vérifier si l'utilisateur est connecté
             if (!isUserLoggedIn()) {
@@ -72,7 +83,7 @@ public class MainFrame extends JFrame {
             } else {
                 // Exécuter l'interface graphique sur le thread dédié
                 SwingUtilities.invokeLater(() -> {
-                    MainFrame frame = new MainFrame(connection, "TestUser");
+                    MainFrame frame = new MainFrame(connection, "TestUser", "CLIENT");
                     frame.setVisible(true); // Afficher la fenêtre
                 });
             }
