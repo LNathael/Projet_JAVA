@@ -14,33 +14,44 @@ public class RegisterFrame extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton registerButton;
+    private JCheckBox showPasswordCheckBox;
     private Connection connection;
 
     public RegisterFrame(Connection connection) {
         this.connection = connection;
 
         setTitle("Inscription");
-        setSize(400, 200);
+        setSize(400, 250);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel mainPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel usernameLabel = new JLabel("Nom d'utilisateur :");
         usernameField = new JTextField();
         JLabel passwordLabel = new JLabel("Mot de passe :");
         passwordField = new JPasswordField();
+        showPasswordCheckBox = new JCheckBox("Afficher le mot de passe");
         registerButton = new JButton("S'inscrire");
 
         mainPanel.add(usernameLabel);
         mainPanel.add(usernameField);
         mainPanel.add(passwordLabel);
         mainPanel.add(passwordField);
-        mainPanel.add(new JLabel());
+        mainPanel.add(showPasswordCheckBox);
+        mainPanel.add(new JLabel()); // Espace vide
         mainPanel.add(registerButton);
 
         add(mainPanel);
+
+        showPasswordCheckBox.addActionListener(e -> {
+            if (showPasswordCheckBox.isSelected()) {
+                passwordField.setEchoChar((char) 0);
+            } else {
+                passwordField.setEchoChar('*');
+            }
+        });
 
         registerButton.addActionListener(new RegisterActionListener());
     }

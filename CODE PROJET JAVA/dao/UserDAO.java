@@ -1,15 +1,12 @@
 package dao;
 
-import model.User;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public class UserDAO {
     private Connection connection;
@@ -18,12 +15,34 @@ public class UserDAO {
         this.connection = connection;
     }
 
+    public boolean isUsernameTaken(String username) throws SQLException {
+        String query = "SELECT COUNT(*) FROM user WHERE username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean registerUser(String username, String password, String role) throws SQLException, NoSuchAlgorithmException {
+        String query = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.setString(2, hashPassword(password));
+            stmt.setString(3, role);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public String authenticateUser(String username, String password) throws SQLException, NoSuchAlgorithmException {
-        String hashedPassword = hashPassword(password);
         String query = "SELECT role FROM user WHERE username = ? AND password = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, username);
-            stmt.setString(2, hashedPassword);
+            stmt.setString(2, hashPassword(password));
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("role");
@@ -31,31 +50,6 @@ public class UserDAO {
             }
         }
         return null;
-    }
-
-    public boolean registerUser(String username, String password, String role) throws SQLException, NoSuchAlgorithmException {
-        if (isUsernameTaken(username)) {
-            return false;
-        }
-        String hashedPassword = hashPassword(password);
-        String query = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, username);
-            stmt.setString(2, hashedPassword);
-            stmt.setString(3, role);
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
-        }
-    }
-
-    public boolean isUsernameTaken(String username) throws SQLException {
-        String query = "SELECT user_id FROM user WHERE username = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, username);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
-            }
-        }
     }
 
     public int getUserIdByUsername(String username) throws SQLException {
@@ -71,30 +65,37 @@ public class UserDAO {
         return -1;
     }
 
-    public List<User> getAllUsers() throws SQLException {
-        List<User> users = new ArrayList<>();
-        String query = "SELECT user_id, username, role FROM user";
-        try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                User user = new User(
-                    rs.getInt("user_id"),
-                    rs.getString("username"),
-                    rs.getString("role")
-                );
-                users.add(user);
+    public String resetPassword(String username) throws SQLException, NoSuchAlgorithmException {
+        String newPassword = generateRandomPassword();
+        String query = "UPDATE user SET password = ? WHERE username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, hashPassword(newPassword));
+            stmt.setString(2, username);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                return newPassword;
             }
         }
-        return users;
+        return null;
     }
 
     private String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] hash = md.digest(password.getBytes());
-        StringBuilder hexString = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (byte b : hash) {
-            hexString.append(String.format("%02x", b));
+            sb.append(String.format("%02x", b));
         }
-        return hexString.toString();
+        return sb.toString();
+    }
+
+    private String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(8);
+        for (int i = 0; i < 8; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 }
