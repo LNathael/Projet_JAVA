@@ -90,23 +90,28 @@ public class ParticipantDAO {
     }
 
     public boolean registerForActivity(int userId, String activityName) throws SQLException {
-        // Vérifier si le user_id existe dans la table participants
-        Participant participant = getParticipantByUserId(userId);
-        if (participant == null) {
-            throw new SQLException("User ID " + userId + " n'existe pas dans la table participants.");
+        // Vérifier si l'utilisateur existe dans la table `user`
+        String userQuery = "SELECT * FROM user WHERE user_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(userQuery)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Erreur : L'utilisateur avec l'ID " + userId + " n'existe pas.");
+                }
+            }
         }
-
-        // Vérifier si l'activité existe dans la table activities
+    
+        // Vérifier si l'activité existe dans la table `activities`
         String activityQuery = "SELECT * FROM activities WHERE nom = ?";
         try (PreparedStatement stmt = connection.prepareStatement(activityQuery)) {
             stmt.setString(1, activityName);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {
-                    throw new SQLException("Activity " + activityName + " n'existe pas dans la table activities.");
+                    throw new SQLException("Erreur : L'activité " + activityName + " n'existe pas.");
                 }
             }
         }
-
+    
         // Vérifier si l'utilisateur est déjà inscrit à l'activité
         String registrationQuery = "SELECT * FROM registrations WHERE user_id = ? AND activity_name = ?";
         try (PreparedStatement stmt = connection.prepareStatement(registrationQuery)) {
@@ -114,13 +119,14 @@ public class ParticipantDAO {
             stmt.setString(2, activityName);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    throw new SQLException("User ID " + userId + " est déjà inscrit à l'activité " + activityName + ".");
+                    throw new SQLException("Erreur : L'utilisateur est déjà inscrit à l'activité " + activityName + ".");
                 }
             }
         }
-
-        String query = "INSERT INTO registrations (user_id, activity_name, status) VALUES (?, ?, 'PENDING')";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+    
+        // Inscrire l'utilisateur à l'activité
+        String insertQuery = "INSERT INTO registrations (user_id, activity_name, status) VALUES (?, ?, 'PENDING')";
+        try (PreparedStatement stmt = connection.prepareStatement(insertQuery)) {
             stmt.setInt(1, userId);
             stmt.setString(2, activityName);
             int rowsInserted = stmt.executeUpdate();
@@ -150,11 +156,12 @@ public class ParticipantDAO {
         return registrations;
     }
 
-    public boolean updateRegistrationStatus(int registrationId, String status) throws SQLException {
-        String query = "UPDATE registrations SET status = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, status);
-            stmt.setInt(2, registrationId);
+    public boolean updateRegistrationStatus(int userId, String activityName, String newStatus) throws SQLException {
+        String updateQuery = "UPDATE registrations SET status = ? WHERE user_id = ? AND activity_name = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, userId);
+            stmt.setString(3, activityName);
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
         }
