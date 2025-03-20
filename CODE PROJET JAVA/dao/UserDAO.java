@@ -6,7 +6,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import model.User;
 
 public class UserDAO {
     private Connection connection;
@@ -97,5 +101,27 @@ public class UserDAO {
             sb.append(chars.charAt(rnd.nextInt(chars.length())));
         }
         return sb.toString();
+    }
+
+
+
+    public List<User> getAllUsers() {
+        String query = "SELECT user_id, username, role FROM user";
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                User user = new User(
+                    rs.getInt("user_id"),
+                    rs.getString("username"),
+                    rs.getString("role")
+                );
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des utilisateurs : " + e.getMessage());
+            e.printStackTrace();
+        }
+        return users;
     }
 }

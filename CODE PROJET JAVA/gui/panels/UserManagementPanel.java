@@ -6,7 +6,6 @@ import model.User;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserManagementPanel extends JPanel {
@@ -29,7 +28,7 @@ public class UserManagementPanel extends JPanel {
             }
             JTable table = new JTable(data, columnNames);
             add(new JScrollPane(table), BorderLayout.CENTER);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erreur lors de la récupération des utilisateurs : " + e.getMessage(),
                     "Erreur", JOptionPane.ERROR_MESSAGE);
