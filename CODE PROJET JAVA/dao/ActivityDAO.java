@@ -1,6 +1,7 @@
 package dao;
 
 import model.Activity;
+import model.Calendrier;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,5 +47,10 @@ public class ActivityDAO {
             stmt.setString(4, activity.getDescription());
             stmt.executeUpdate();
         }
+    }
+
+    public Iterable<Calendrier> getActivitesParTrancheAge(int i) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getActivitesParTrancheAge'");
     }
 }
