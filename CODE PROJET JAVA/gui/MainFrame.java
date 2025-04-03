@@ -1,18 +1,22 @@
 package gui;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.sql.Connection;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import gui.panels.ActivityManagementPanel;
-import gui.panels.CalendrierPanel;
-import gui.panels.NotificationsPanel;
 import gui.panels.ActivitySearchPanel;
+import gui.panels.ActivityStatusPanel;
+import gui.panels.CalendrierPanel;
 import gui.panels.RegistrationManagementPanel;
 import util.DatabaseConnection;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
 
 public class MainFrame extends JFrame {
     private String username;
@@ -38,17 +42,14 @@ public class MainFrame extends JFrame {
 
         if ("ADMIN".equalsIgnoreCase(role)) {
             // Ajouter les onglets pour l'administrateur
-            tabbedPane.addTab("Activités", new ActivityManagementPanel(connection));
+            tabbedPane.addTab("Gestion des Activités", new ActivityManagementPanel(connection));
             tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
-            tabbedPane.addTab("Notifications", new NotificationsPanel(connection));
             tabbedPane.addTab("Inscriptions", new RegistrationManagementPanel(connection));
         } else {
             // Ajouter les onglets pour le client
-            tabbedPane.addTab("Rechercher Activités", new ActivitySearchPanel(connection));
-            tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));
-            tabbedPane.addTab("Notifications", new NotificationsPanel(connection));
-
-        }
+            tabbedPane.addTab("Recherche d'Activités", new ActivitySearchPanel(connection)); // Ajout de ActivitySearchPanel
+            tabbedPane.addTab("statue d'Activités", new ActivityStatusPanel(connection)); // Ajout de ActivityStatusPanel
+            tabbedPane.addTab("Calendrier", new CalendrierPanel(connection));        }
 
         // Ajout des onglets au contenu principal de la fenêtre
         add(tabbedPane, BorderLayout.CENTER);
@@ -57,12 +58,9 @@ public class MainFrame extends JFrame {
         JPanel topPanel = new JPanel(new BorderLayout());
         JLabel userLabel = new JLabel("Connecté en tant que : " + username);
         JButton logoutButton = new JButton("Déconnexion");
-        logoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new LoginFrame(connection).setVisible(true);
-                dispose();
-            }
+        logoutButton.addActionListener(e -> {
+            new LoginFrame(connection).setVisible(true);
+            dispose();
         });
         topPanel.add(userLabel, BorderLayout.WEST);
         topPanel.add(logoutButton, BorderLayout.EAST);

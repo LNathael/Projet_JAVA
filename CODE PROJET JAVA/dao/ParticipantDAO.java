@@ -1,17 +1,17 @@
 package dao;
 
-import model.Participant;
-import model.Activity;
-import model.Registration;
-import model.Notification;
-import service.NotificationService;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Activity;
+import model.Notification;
+import model.Participant;
+import model.Registration;
+import service.NotificationService;
 
 public class ParticipantDAO {
     private Connection connection;
@@ -40,24 +40,29 @@ public class ParticipantDAO {
         return null;
     }
 
-    public Participant getParticipantByUserId(int userId) throws SQLException {
-        String query = "SELECT * FROM participants WHERE user_id = ?";
+    public List<Activity> getActivitiesByUserId(int userId) throws SQLException {
+        String query = "SELECT a.id, a.nom, a.age_min, a.age_max, a.description, r.status " +
+                       "FROM activities a " +
+                       "JOIN registrations r ON a.nom = r.activity_name " +
+                       "WHERE r.user_id = ?";
+        List<Activity> activities = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, userId);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Participant(
+                while (rs.next()) {
+                    Activity activity = new Activity(
                         rs.getInt("id"),
                         rs.getString("nom"),
-                        rs.getInt("age"),
-                        rs.getInt("user_id"),
-                        rs.getInt("id_user"),
-                        rs.getString("status")
+                        rs.getInt("age_min"),
+                        rs.getInt("age_max"),
+                        rs.getString("description")
                     );
+                    activity.setStatus(rs.getString("status")); // Ajout du statut
+                    activities.add(activity);
                 }
             }
         }
-        return null;
+        return activities;
     }
 
     public List<Participant> getPendingParticipants() throws SQLException {
@@ -87,6 +92,33 @@ public class ParticipantDAO {
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
         }
+    }
+
+    public List<Registration> getRegistrationsByUserId(int userId) throws SQLException {
+        String query = "SELECT r.id, r.user_id, r.activity_name, r.status, p.nom AS participant_name " +
+                       "FROM registrations r " +
+                       "JOIN participants p ON r.user_id = p.user_id " +
+                       "WHERE r.user_id = ?";
+        List<Registration> registrations = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Registration registration = new Registration(
+                        rs.getInt("id"),                  // ID de l'inscription
+                        rs.getInt("user_id"),             // ID de l'utilisateur
+                        rs.getString("activity_name"),    // Nom de l'activité
+                        rs.getString("status"),           // Statut de l'inscription
+                        rs.getString("participant_name")  // Nom du participant
+                    );
+                    registrations.add(registration);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des inscriptions pour l'utilisateur " + userId + " : " + e.getMessage());
+            throw e;
+        }
+        return registrations;
     }
 
     public boolean registerForActivity(int userId, String activityName) throws SQLException {
@@ -143,19 +175,17 @@ public class ParticipantDAO {
         try (PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Registration registration = new Registration(
-                    rs.getInt("id"),
-                    rs.getInt("user_id"),
-                    rs.getString("activity_name"),
-                    rs.getString("status"),
-                    rs.getString("participant_name")
-                );
-                registrations.add(registration);
+                registrations.add(new Registration(
+                    rs.getInt("id"),                  // ID de l'inscription
+                    rs.getInt("user_id"),             // ID de l'utilisateur
+                    rs.getString("activity_name"),    // Nom de l'activité
+                    rs.getString("status"),           // Statut de l'inscription
+                    rs.getString("participant_name")  // Nom du participant
+                ));
             }
         }
         return registrations;
     }
-
     public boolean updateRegistrationStatus(int userId, String activityName, String newStatus) throws SQLException {
         String updateQuery = "UPDATE registrations SET status = ? WHERE user_id = ? AND activity_name = ?";
         try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
@@ -167,26 +197,6 @@ public class ParticipantDAO {
         }
     }
 
-    public List<Activity> getActivitiesByUserId(int userId) throws SQLException {
-        String query = "SELECT a.* FROM activities a JOIN registrations r ON a.nom = r.activity_name WHERE r.user_id = ?";
-        List<Activity> activities = new ArrayList<>();
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, userId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Activity activity = new Activity(
-                        rs.getInt("id"),
-                        rs.getString("nom"),
-                        rs.getInt("age_min"),
-                        rs.getInt("age_max"),
-                        rs.getString("description")
-                    );
-                    activities.add(activity);
-                }
-            }
-        }
-        return activities;
-    }
 
     public void ajouterParticipant(Participant participant) throws SQLException {
         String query = "INSERT INTO participants (nom, age, user_id, id_user, status) VALUES (?, ?, ?, ?, ?)";
@@ -216,5 +226,18 @@ public class ParticipantDAO {
                 }
             }
         }
+    }
+    public boolean isUserAlreadyRegistered(int userId, String activityName) throws SQLException {
+        String query = "SELECT COUNT(*) FROM registrations WHERE user_id = ? AND activity_name = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, activityName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 }
