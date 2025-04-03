@@ -8,7 +8,6 @@ import gui.panels.NotificationsPanel;
 import gui.panels.ActivitySearchPanel;
 import gui.panels.RegistrationManagementPanel;
 import util.DatabaseConnection;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
