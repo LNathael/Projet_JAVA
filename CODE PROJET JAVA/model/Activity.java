@@ -6,6 +6,7 @@ public class Activity {
     private int ageMin;
     private int ageMax;
     private String description;
+    private String status; // Nouveau champ pour le statut
 
     public Activity(int id, String nom, int ageMin, int ageMax, String description) {
         this.id = id;
@@ -30,4 +31,7 @@ public class Activity {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getStatus() { return status; } // Getter pour le statut
+    public void setStatus(String status) { this.status = status; } // Setter pour le statut
 }

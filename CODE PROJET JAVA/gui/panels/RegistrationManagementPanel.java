@@ -37,7 +37,7 @@ public class RegistrationManagementPanel extends JPanel {
                 int registrationId = (int) tableModel.getValueAt(selectedRow, 0);
                 try {
                     ParticipantDAO participantDAO = new ParticipantDAO(connection);
-                    boolean success = participantDAO.updateRegistrationStatus(registrationId, "ACCEPTED");
+                    boolean success = participantDAO.updateRegistrationStatus(registrationId, "ACCEPTED", "SomeAdditionalInfo");
                     if (success) {
                         JOptionPane.showMessageDialog(this, "Inscription acceptée !");
                         loadPendingRegistrations(tableModel);
@@ -60,7 +60,7 @@ public class RegistrationManagementPanel extends JPanel {
                 int registrationId = (int) tableModel.getValueAt(selectedRow, 0);
                 try {
                     ParticipantDAO participantDAO = new ParticipantDAO(connection);
-                    boolean success = participantDAO.updateRegistrationStatus(registrationId, "REJECTED");
+                    boolean success = participantDAO.updateRegistrationStatus(registrationId, "REJECTED", "SomeAdditionalInfo");
                     if (success) {
                         JOptionPane.showMessageDialog(this, "Inscription refusée !");
                         loadPendingRegistrations(tableModel);
@@ -88,13 +88,12 @@ public class RegistrationManagementPanel extends JPanel {
         try {
             ParticipantDAO participantDAO = new ParticipantDAO(connection);
             List<Registration> registrations = participantDAO.getPendingRegistrations();
-            tableModel.setRowCount(0); // Clear existing rows
             for (Registration registration : registrations) {
                 tableModel.addRow(new Object[]{
                     registration.getId(),
-                    registration.getParticipantName(),
-                    registration.getActivityName(),
-                    registration.getStatus()
+                    registration.getParticipantName(), // Nom du participant
+                    registration.getActivityName(),    // Nom de l'activité
+                    registration.getStatus()           // Statut de l'inscription
                 });
             }
         } catch (SQLException ex) {

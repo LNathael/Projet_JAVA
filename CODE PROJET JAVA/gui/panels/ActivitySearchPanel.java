@@ -18,17 +18,54 @@ public class ActivitySearchPanel extends JPanel {
         setLayout(new BorderLayout());
 
         // Formulaire de recherche
-        JPanel formPanel = new JPanel();
+        JPanel formPanel = new JPanel(new FlowLayout());
         formPanel.add(new JLabel("Nom de l'activité :"));
-        JTextField nameField = new JTextField(10);
+        JTextField nameField = new JTextField(15);
         formPanel.add(nameField);
+
         JButton searchButton = new JButton("Rechercher");
         formPanel.add(searchButton);
 
-        // Liste des résultats
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        JList<String> activityList = new JList<>(listModel);
-        JScrollPane scrollPane = new JScrollPane(activityList);
+        // Menu déroulant pour afficher toutes les activités
+        JComboBox<String> activityDropdown = new JComboBox<>();
+        formPanel.add(new JLabel("Ou sélectionnez une activité :"));
+        formPanel.add(activityDropdown);
+
+        // Zone pour afficher les détails de l'activité sélectionnée
+        JTextArea activityDetails = new JTextArea(5, 30);
+        activityDetails.setEditable(false);
+        activityDetails.setLineWrap(true);
+        activityDetails.setWrapStyleWord(true);
+        JScrollPane detailsScrollPane = new JScrollPane(activityDetails);
+
+        // Bouton pour s'inscrire à une activité
+        JButton registerButton = new JButton("S'inscrire");
+
+        // Charger toutes les activités dans le menu déroulant
+        loadAllActivities(activityDropdown);
+
+        // Action sur le menu déroulant
+        activityDropdown.addActionListener(e -> {
+            String selectedActivityName = (String) activityDropdown.getSelectedItem();
+            if (selectedActivityName != null) {
+                try {
+                    ActivityDAO activityDAO = new ActivityDAO(connection);
+                    List<Activity> activities = activityDAO.searchActivitiesByName(selectedActivityName);
+                    if (!activities.isEmpty()) {
+                        Activity activity = activities.get(0); // On suppose que le nom est unique
+                        activityDetails.setText(
+                            "Nom : " + activity.getNom() + "\n" +
+                            "Description : " + activity.getDescription() + "\n" +
+                            "Âge minimum : " + activity.getAgeMin() + "\n" +
+                            "Âge maximum : " + activity.getAgeMax()
+                        );
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Erreur lors du chargement des détails de l'activité : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         // Action sur le bouton de recherche
         searchButton.addActionListener(e -> {
@@ -36,9 +73,9 @@ public class ActivitySearchPanel extends JPanel {
                 String name = nameField.getText();
                 ActivityDAO activityDAO = new ActivityDAO(connection);
                 List<Activity> activities = activityDAO.searchActivitiesByName(name);
-                listModel.clear();
+                activityDropdown.removeAllItems();
                 for (Activity activity : activities) {
-                    listModel.addElement(activity.getNom());
+                    activityDropdown.addItem(activity.getNom());
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -46,19 +83,24 @@ public class ActivitySearchPanel extends JPanel {
             }
         });
 
-        // Bouton pour s'inscrire à une activité
-        JButton registerButton = new JButton("S'inscrire");
+        // Action sur le bouton pour s'inscrire
         registerButton.addActionListener(e -> {
-            int selectedIndex = activityList.getSelectedIndex();
-            if (selectedIndex != -1) {
-                String selectedActivity = listModel.getElementAt(selectedIndex);
+            String selectedActivityName = (String) activityDropdown.getSelectedItem();
+            if (selectedActivityName != null) {
                 try {
                     // TODO: Remplacer par l'ID de l'utilisateur connecté
                     int userId = 1; // Exemple d'ID utilisateur
                     ParticipantDAO participantDAO = new ParticipantDAO(connection);
-                    boolean success = participantDAO.registerForActivity(userId, selectedActivity);
+
+                    // Vérifier si l'utilisateur est déjà inscrit
+                    if (participantDAO.isUserAlreadyRegistered(userId, selectedActivityName)) {
+                        JOptionPane.showMessageDialog(this, "Vous êtes déjà inscrit à l'activité : " + selectedActivityName, "Information", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+
+                    boolean success = participantDAO.registerForActivity(userId, selectedActivityName);
                     if (success) {
-                        JOptionPane.showMessageDialog(this, "Inscription réussie à l'activité : " + selectedActivity);
+                        JOptionPane.showMessageDialog(this, "Inscription réussie à l'activité : " + selectedActivityName);
                     } else {
                         JOptionPane.showMessageDialog(this, "Erreur lors de l'inscription à l'activité.", "Erreur", JOptionPane.ERROR_MESSAGE);
                     }
@@ -71,27 +113,27 @@ public class ActivitySearchPanel extends JPanel {
             }
         });
 
-        // Bouton pour afficher les activités inscrites
-        JButton showActivitiesButton = new JButton("Mes Activités");
-        showActivitiesButton.addActionListener(e -> {
-            try {
-                // TODO: Remplacer par l'ID de l'utilisateur connecté
-                int userId = 1; // Exemple d'ID utilisateur
-                ParticipantDAO participantDAO = new ParticipantDAO(connection);
-                List<Activity> activities = participantDAO.getActivitiesByUserId(userId);
-                listModel.clear();
-                for (Activity activity : activities) {
-                    listModel.addElement(activity.getNom());
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Erreur lors de la récupération des activités : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
+        // Ajout des composants au panneau
         add(formPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(registerButton, BorderLayout.SOUTH);
-        add(showActivitiesButton, BorderLayout.EAST);
+        add(detailsScrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(registerButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    // Charger toutes les activités dans le menu déroulant
+    private void loadAllActivities(JComboBox<String> activityDropdown) {
+        try {
+            ActivityDAO activityDAO = new ActivityDAO(connection);
+            List<Activity> activities = activityDAO.searchActivitiesByName(""); // Charger toutes les activités
+            activityDropdown.removeAllItems();
+            for (Activity activity : activities) {
+                activityDropdown.addItem(activity.getNom());
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erreur lors du chargement des activités : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

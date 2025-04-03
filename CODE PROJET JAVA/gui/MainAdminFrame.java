@@ -16,7 +16,6 @@ public class MainAdminFrame extends JFrame {
 
     public MainAdminFrame(Connection connection, String username) {
         this.connection = connection;
-        this.username = username;
 
         setTitle("Administration - Gestion des utilisateurs");
         setSize(800, 600);
@@ -38,7 +37,7 @@ public class MainAdminFrame extends JFrame {
 
         // Barre d'outils avec le nom de l'utilisateur et le bouton de déconnexion
         JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel userLabel = new JLabel("Connecté en tant que : " + username);
+        JLabel userLabel = new JLabel("Connecté en tant que : " + this.username);
         JButton logoutButton = new JButton("Déconnexion");
         logoutButton.addActionListener(new ActionListener() {
             @Override
